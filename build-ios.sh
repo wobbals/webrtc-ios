@@ -31,11 +31,25 @@ do
     $AR -x $LIB
 done
 $AR -q libfattycakes.a *.o
-
 cd $ROOT
 
+ARTIFACT=out_ios/artifact
+mkdir -p $ARTIFACT/lib
+mkdir -p $ARTIFACT/include
+cp $FATTYCAKES_OUT/libfattycakes.a out_ios/artifact/lib
+HEADERS_OUT=`find net talk third_party webrtc -name *.h`
+for HEADER in $HEADERS_OUT
+do
+    HEADER_DIR=`dirname $HEADER`
+    mkdir -p $ARTIFACT/include/$HEADER_DIR
+    cp $HEADER $ARTIFACT/include/$HEADER
+done
+
+cd $ROOT
 REVISION=`svn info $BRANCH | grep Revision | cut -f2 -d: | tr -d ' '`
 echo "WEBRTC_REVISION=$REVISION" > build.properties
 
+cd $ARTIFACT
+tar cjf fattycakes-$REVISION.tar.bz2 lib include
 
 
