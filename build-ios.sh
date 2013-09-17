@@ -24,6 +24,7 @@ PWD=`pwd`
 ROOT=$PWD
 LIBS_OUT=`find $PWD/out_ios/Debug -d 1 -name '*.a'`
 FATTYCAKES_OUT=out.huge
+rm -rf $FATTYCAKES_OUT || echo "clean $FATTYCAKES_OUT"
 mkdir -p $FATTYCAKES_OUT
 cd $FATTYCAKES_OUT
 for LIB in $LIBS_OUT
@@ -34,6 +35,7 @@ $AR -q libfattycakes.a *.o
 cd $ROOT
 
 ARTIFACT=out_ios/artifact
+rm -rf $ARTIFACT || echo "clean $ARTIFACT"
 mkdir -p $ARTIFACT/lib
 mkdir -p $ARTIFACT/include
 cp $FATTYCAKES_OUT/libfattycakes.a out_ios/artifact/lib
