@@ -11,7 +11,7 @@ gclient sync
 perl -i -wpe "s/target\_os \= \[\'mac\'\]/target\_os \= \[\'ios\', \'mac\']/g" .gclient
 gclient sync
 cd trunk
-export GYP_DEFINES="build_with_libjingle=1 build_with_chromium=0 libjingle_objc=1 OS=ios target_arch=armv7"
+export GYP_DEFINES="build_with_libjingle=1 build_with_chromium=0 libjingle_objc=1 OS=ios target_arch=armv7 enable_tracing=1"
 export GYP_GENERATORS="ninja"
 export GYP_GENERATOR_FLAGS="output_dir=out_ios"
 export GYP_CROSSCOMPILE=1
