@@ -17,7 +17,7 @@ export GYP_GENERATOR_FLAGS="output_dir=out_ios"
 export GYP_CROSSCOMPILE=1
 gclient runhooks
 ninja -C out_ios/Debug -t clean
-ninja -C out_ios/Debug libjingle_peerconnection_objc_test
+ninja -v -C out_ios/Debug libjingle_peerconnection_objc_test
 
 AR=`xcrun -f ar`
 PWD=`pwd`
