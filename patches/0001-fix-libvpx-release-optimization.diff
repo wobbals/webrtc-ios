@@ -7,7 +7,7 @@ diff --git a/trunk/third_party/libvpx/libvpx.gyp b/trunk/third_party/libvpx/libv
    'variables': {
      'libvpx_build_vp9%': 1,
      'libvpx_source%': 'source/libvpx',
-+    'mac_release_optimization%': '1',
++    'mac_release_optimization%': '0',
      'conditions': [
        ['os_posix==1', {
          'asm_obj_extension': 'o',
