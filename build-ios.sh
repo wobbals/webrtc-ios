@@ -4,25 +4,45 @@
 # This script automates the build process described by webrtc:
 # https://code.google.com/p/webrtc/source/browse/trunk/talk/app/webrtc/objc/README
 #
+PWD=`pwd`
+ROOT=$PWD
+WEBRTC_ROOT=$ROOT/trunk
 
+if [ -z $CONFIGURATION ]; then
+    CONFIGURATION=Release
+fi
 gclient config http://webrtc.googlecode.com/svn/trunk
 echo "target_os = ['mac']" >> .gclient
+gclient revert
 gclient sync
 perl -i -wpe "s/target\_os \= \[\'mac\'\]/target\_os \= \[\'ios\', \'mac\']/g" .gclient
 gclient sync
-cd trunk
+cd $WEBRTC_ROOT
 export GYP_DEFINES="build_with_libjingle=1 build_with_chromium=0 libjingle_objc=1 OS=ios target_arch=armv7 enable_tracing=1"
 export GYP_GENERATORS="ninja"
 export GYP_GENERATOR_FLAGS="output_dir=out_ios"
 export GYP_CROSSCOMPILE=1
+if [ -d out_ios ]; then
+    rm -rf out_ios
+fi
+if [ -d out.huge ]; then
+    rm -rf out.huge
+fi
 gclient runhooks
-ninja -C out_ios/Debug -t clean
-ninja -v -C out_ios/Debug libjingle_peerconnection_objc_test
+
+# hop up one level and apply patches before continuing
+cd $ROOT
+PATCHES=`find $PWD/patches -name *.diff`
+for PATCH in $PATCHES; do
+    git apply $PATCH || { echo "patch $PATCH failed to patch! panic and die!" ; exit 1; }
+done
+
+cd $WEBRTC_ROOT
+ninja -v -C out_ios/$CONFIGURATION libjingle_peerconnection_objc_test || echo "oops!"
 
 AR=`xcrun -f ar`
-PWD=`pwd`
-ROOT=$PWD
-LIBS_OUT=`find $PWD/out_ios/Debug -d 1 -name '*.a'`
+
+LIBS_OUT=`find $PWD/out_ios/$CONFIGURATION -d 1 -name '*.a'`
 FATTYCAKES_OUT=out.huge
 rm -rf $FATTYCAKES_OUT || echo "clean $FATTYCAKES_OUT"
 mkdir -p $FATTYCAKES_OUT
@@ -32,7 +52,7 @@ do
     $AR -x $LIB
 done
 $AR -q libfattycakes.a *.o
-cd $ROOT
+cd $WEBRTC_ROOT
 
 ARTIFACT=out_ios/artifact
 rm -rf $ARTIFACT || echo "clean $ARTIFACT"

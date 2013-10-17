@@ -1,0 +1,13 @@
+Index: libvpx.gyp
+===================================================================
+diff --git a/trunk/third_party/libvpx/libvpx.gyp b/trunk/third_party/libvpx/libvpx.gyp
+--- a/trunk/third_party/libvpx/libvpx.gyp	      (revision 225010)
++++ b/trunk/third_party/libvpx/libvpx.gyp	      (working copy)
+@@ -5,6 +5,7 @@
+   'variables': {
+     'libvpx_build_vp9%': 1,
+     'libvpx_source%': 'source/libvpx',
++    'mac_release_optimization%': '1',
+     'conditions': [
+       ['os_posix==1', {
+         'asm_obj_extension': 'o',
