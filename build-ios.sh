@@ -37,6 +37,8 @@ for PATCH in $PATCHES; do
     git apply $PATCH || { echo "patch $PATCH failed to patch! panic and die!" ; exit 1; }
 done
 
+
+
 cd $WEBRTC_ROOT
 ninja -v -C out_ios/$CONFIGURATION libjingle_peerconnection_objc_test || echo "oops!"
 
@@ -67,7 +69,7 @@ do
     cp $HEADER $ARTIFACT/include/$HEADER
 done
 
-cd $ROOT
+cd $WEBRTC_ROOT
 REVISION=`svn info $BRANCH | grep Revision | cut -f2 -d: | tr -d ' '`
 echo "WEBRTC_REVISION=$REVISION" > build.properties
 
