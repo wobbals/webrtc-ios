@@ -28,8 +28,6 @@ fi
 if [ -d out.huge ]; then
     rm -rf out.huge
 fi
-gclient runhooks
-
 # hop up one level and apply patches before continuing
 cd $ROOT
 PATCHES=`find $PWD/patches -name *.diff`
@@ -37,9 +35,8 @@ for PATCH in $PATCHES; do
     git apply $PATCH || { echo "patch $PATCH failed to patch! panic and die!" ; exit 1; }
 done
 
-
-
 cd $WEBRTC_ROOT
+gclient runhooks
 ninja -v -C out_ios/$CONFIGURATION libjingle_peerconnection_objc_test || { echo "ninja build failed. booooooooo."; exit 1; }
 
 AR=`xcrun -f ar`
