@@ -9,7 +9,7 @@ ROOT=$PWD
 WEBRTC_ROOT=$ROOT/trunk
 
 if [ -z $CONFIGURATION ]; then
-    CONFIGURATION=Release
+    CONFIGURATION=Release-iphoneos
 fi
 gclient config http://webrtc.googlecode.com/svn/trunk
 echo "target_os = ['mac']" >> .gclient
@@ -40,7 +40,7 @@ done
 
 
 cd $WEBRTC_ROOT
-ninja -v -C out_ios/$CONFIGURATION libjingle_peerconnection_objc_test || echo "oops!"
+ninja -v -C out_ios/$CONFIGURATION libjingle_peerconnection_objc_test || { echo "ninja build failed. booooooooo."; exit 1; }
 
 AR=`xcrun -f ar`
 
