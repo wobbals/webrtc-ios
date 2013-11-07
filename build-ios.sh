@@ -37,7 +37,7 @@ done
 
 cd $WEBRTC_ROOT
 gclient runhooks
-ninja -v -C out_ios/$CONFIGURATION AppRTCDemo || { echo "ninja build failed. booooooooo." }
+ninja -v -C out_ios/$CONFIGURATION AppRTCDemo || { echo "ninja build failed. booooooooo."; }
 
 AR=`xcrun -f ar`
 
@@ -72,5 +72,3 @@ echo "WEBRTC_REVISION=$REVISION" > build.properties
 
 cd $ARTIFACT
 tar cjf fattycakes-$REVISION.tar.bz2 lib include
-
-
