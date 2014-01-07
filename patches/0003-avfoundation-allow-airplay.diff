@@ -1,0 +1,86 @@
+Index: audio_device_ios.cc
+===================================================================
+diff --git a/trunk/webrtc/modules/audio_device/ios/audio_device_ios.cc b/trunk/webrtc/modules/audio_device/ios/audio_device_ios.cc
+--- a/trunk/webrtc/modules/audio_device/ios/audio_device_ios.cc	(revision 5127)
++++ b/trunk/webrtc/modules/audio_device/ios/audio_device_ios.cc	(working copy)
+@@ -16,6 +16,19 @@
+ #include "webrtc/system_wrappers/interface/trace.h"
+ 
+ namespace webrtc {
++	
++void interruptionListenerCallback (
++								   void    *inUserData,
++								   UInt32  interruptionState
++								   ) {
++	AudioDeviceIPhone *controller = (AudioDeviceIPhone *) inUserData;
++	
++	if (interruptionState == kAudioSessionBeginInterruption) {
++	} else if (interruptionState == kAudioSessionEndInterruption) {
++		controller->ResetAudioDevice();
++	}
++}
++	
+ AudioDeviceIPhone::AudioDeviceIPhone(const int32_t id)
+     :
+     _ptrAudioBuffer(NULL),
+@@ -718,6 +731,9 @@
+         kAudioSessionProperty_OverrideCategoryDefaultToSpeaker,
+         sizeof(doChangeDefaultRoute), &doChangeDefaultRoute);
+ 
++	UInt32 propertyTrue = 1;
++	AudioSessionSetProperty(kAudioSessionProperty_OverrideCategoryMixWithOthers,
++							sizeof(propertyTrue), &propertyTrue);
+     if (err != noErr) {
+         WEBRTC_TRACE(kTraceError, kTraceAudioDevice, _id,
+             "Error changing default output route " \
+@@ -1193,6 +1209,18 @@
+         // todo: Call AudioUnitReset() here and empty all buffers?
+         return 0;
+     }
++	
++	AudioSessionInitialize(NULL, NULL, interruptionListenerCallback, this);
++	UInt32 audioCategory = kAudioSessionCategory_PlayAndRecord;
++	UInt32 propertyFalse = 0;
++	UInt32 propertyTrue = 1;
++	AudioSessionSetProperty(kAudioSessionProperty_AudioCategory,
++							sizeof(audioCategory), &audioCategory);
++	AudioSessionSetProperty(kAudioSessionProperty_OtherMixableAudioShouldDuck,
++							sizeof(propertyFalse), &propertyFalse);
++	AudioSessionSetActive(true);
++	
++	SetLoudspeakerStatus(true);
+ 
+     // Create Voice Processing Audio Unit
+     AudioComponentDescription desc;
+@@ -1219,20 +1247,6 @@
+         return -1;
+     }
+ 
+-    // Set preferred hardware sample rate to 16 kHz
+-    Float64 sampleRate(16000.0);
+-    result = AudioSessionSetProperty(
+-                         kAudioSessionProperty_PreferredHardwareSampleRate,
+-                         sizeof(sampleRate), &sampleRate);
+-    if (0 != result) {
+-        WEBRTC_TRACE(kTraceInfo, kTraceAudioDevice, _id,
+-                     "Could not set preferred sample rate (result=%d)", result);
+-    }
+-
+-    uint32_t voiceChat = kAudioSessionMode_VoiceChat;
+-    AudioSessionSetProperty(kAudioSessionProperty_Mode,
+-                            sizeof(voiceChat), &voiceChat);
+-
+     //////////////////////
+     // Setup Voice Processing Audio Unit
+ 
+@@ -1438,6 +1452,8 @@
+                  "  Current HW sample rate is %f, ADB sample rate is %d",
+              hardwareSampleRate, _adbSampFreq);
+ 
++	AudioSessionSetProperty(kAudioSessionProperty_OverrideCategoryMixWithOthers,
++							sizeof(propertyTrue), &propertyTrue);
+     return 0;
+ }
+ 
+
+ 
