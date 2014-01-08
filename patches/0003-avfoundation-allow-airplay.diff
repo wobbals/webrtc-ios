@@ -52,12 +52,10 @@ diff --git a/trunk/webrtc/modules/audio_device/ios/audio_device_ios.cc b/trunk/w
  
      // Create Voice Processing Audio Unit
      AudioComponentDescription desc;
-@@ -1219,20 +1247,6 @@
-         return -1;
-     }
+@@ -1221,18 +1249,14 @@
  
--    // Set preferred hardware sample rate to 16 kHz
--    Float64 sampleRate(16000.0);
+     // Set preferred hardware sample rate to 16 kHz
+     Float64 sampleRate(16000.0);
 -    result = AudioSessionSetProperty(
 -                         kAudioSessionProperty_PreferredHardwareSampleRate,
 -                         sizeof(sampleRate), &sampleRate);
@@ -65,7 +63,14 @@ diff --git a/trunk/webrtc/modules/audio_device/ios/audio_device_ios.cc b/trunk/w
 -        WEBRTC_TRACE(kTraceInfo, kTraceAudioDevice, _id,
 -                     "Could not set preferred sample rate (result=%d)", result);
 -    }
--
++//    result = AudioSessionSetProperty(
++//                         kAudioSessionProperty_PreferredHardwareSampleRate,
++//                         sizeof(sampleRate), &sampleRate);
++//    if (0 != result) {
++//        WEBRTC_TRACE(kTraceInfo, kTraceAudioDevice, _id,
++//                     "Could not set preferred sample rate (result=%d)", result);
++//    }
+ 
 -    uint32_t voiceChat = kAudioSessionMode_VoiceChat;
 -    AudioSessionSetProperty(kAudioSessionProperty_Mode,
 -                            sizeof(voiceChat), &voiceChat);
@@ -73,7 +78,7 @@ diff --git a/trunk/webrtc/modules/audio_device/ios/audio_device_ios.cc b/trunk/w
      //////////////////////
      // Setup Voice Processing Audio Unit
  
-@@ -1438,6 +1452,8 @@
+@@ -1438,6 +1462,8 @@
                   "  Current HW sample rate is %f, ADB sample rate is %d",
               hardwareSampleRate, _adbSampFreq);
  
@@ -81,6 +86,4 @@ diff --git a/trunk/webrtc/modules/audio_device/ios/audio_device_ios.cc b/trunk/w
 +							sizeof(propertyTrue), &propertyTrue);
      return 0;
  }
- 
-
  
